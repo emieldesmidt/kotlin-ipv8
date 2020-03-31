@@ -91,7 +91,7 @@ class VotingCommunity : Community() {
                 continue
             }
 
-            if (!voters.contains(it.publicKey.contentToString())){
+            if (!voters.contains(it.publicKey.toString())){
                 continue
             }
 
