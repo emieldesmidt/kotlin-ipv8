@@ -1,18 +1,12 @@
 package nl.tudelft.ipv8.android.voting
 
-import android.util.Log
 import nl.tudelft.ipv8.Address
 import nl.tudelft.ipv8.Community
 import nl.tudelft.ipv8.IPv8
 import nl.tudelft.ipv8.Overlay
 import nl.tudelft.ipv8.android.IPv8Android
-import nl.tudelft.ipv8.attestation.trustchain.EMPTY_PK
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainBlock
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
-import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
 import java.util.*
 
 class VotingCommunity : Community() {
@@ -34,11 +28,16 @@ class VotingCommunity : Community() {
             ?: throw IllegalStateException("TrustChainCommunity is not configured")
     }
 
+    protected fun getVotingCommunity(): VotingCommunity {
+        return getIpv8().getOverlay()
+            ?: throw IllegalStateException("VotingCommunity is not configured")
+    }
+
     protected fun getIpv8(): IPv8 {
         return IPv8Android.getInstance()
     }
 
-    val tvoter: TrustchainVoter = TrustchainVoter(trustchain)
+    val tvoter: TrustChainVoter = TrustChainVoter(trustchain)
 
     fun startVote(voters : List<String>, voteSubject: String) = tvoter.startVote(voters, voteSubject)
 
@@ -47,4 +46,5 @@ class VotingCommunity : Community() {
     fun countVotes(voters: List<String>, voteName: String, proposerKey: ByteArray): Pair<Int, Int> = countVotes(voters, voteName, proposerKey)
 
     class Factory : Overlay.Factory<VotingCommunity>(VotingCommunity::class.java)
+
 }

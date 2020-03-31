@@ -9,7 +9,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 
-class TrustchainVoter(protected val trustchain: TrustChainHelper) {
+class TrustChainVoter(protected val trustchain: TrustChainHelper) {
 
 
     fun startVote(voters : List<String>, voteSubject: String) {
