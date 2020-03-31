@@ -53,7 +53,7 @@ class DebugFragment : BaseFragment() {
 
         builder.setPositiveButton("Create") { _, _ ->
             val proposal = input.text.toString()
-            getVotingCommunity().startVote(proposal)
+            getVotingCommunity().startVote(getVotingCommunity().getPeers().map { it.publicKey.toString() }, proposal)
             Toast.makeText(this.context, "Start voting procedure", Toast.LENGTH_SHORT).show()
         }
 
