@@ -43,7 +43,7 @@ class VotingCommunity : Community() {
 
     fun respondToVote(voteName: String, vote: Boolean, proposalBlock: TrustChainBlock) =  tvoter.respondToVote(voteName, vote, proposalBlock)
 
-    fun countVotes(voters: List<String>, voteName: String, proposerKey: ByteArray): Pair<Int, Int> = countVotes(voters, voteName, proposerKey)
+    fun countVotes(voters: List<String>, voteName: String, proposerKey: ByteArray): Pair<Int, Int> = tvoter.countVotes(voters, voteName, proposerKey)
 
     class Factory : Overlay.Factory<VotingCommunity>(VotingCommunity::class.java)
 
