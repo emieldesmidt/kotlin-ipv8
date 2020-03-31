@@ -18,7 +18,7 @@ class VotingCommunity : Community() {
     val trustchainvoter: TrustChainVoter = TrustChainVoter()
 
     /**
-     * Initialize TrustChainHelper so we can make use of the TrustChain
+     * Initialize TrustChainHelper so we can make use of the TrustChain.
       */
 
     protected val trustchain: TrustChainHelper by lazy {
@@ -40,17 +40,17 @@ class VotingCommunity : Community() {
     }
 
     /**
-     * Use startVote function from API
+     * Use startVote function from API.
      */
     fun startVote(voters : List<String>, voteSubject: String) = trustchainvoter.startVote(voters, voteSubject)
 
     /**
-     * Use respondToVote function from API
+     * Use respondToVote function from API.
      */
     fun respondToVote(voteName: String, vote: Boolean, proposalBlock: TrustChainBlock) =  trustchainvoter.respondToVote(voteName, vote, proposalBlock)
 
     /**
-     * Use countVotes function from API
+     * Use countVotes function from API.
      */
     fun countVotes(voters: List<String>, voteName: String, proposerKey: ByteArray): Pair<Int, Int> = trustchainvoter.countVotes(voters, voteName, proposerKey)
 

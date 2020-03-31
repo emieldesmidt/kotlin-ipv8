@@ -145,7 +145,7 @@ class TrustChainVoter() {
     }
 
     /**
-     * Log invalid vote
+     * Log invalid vote.
      */
     private fun handleInvalidVote(errorType: String) {
         Log.e("vote_debug", errorType)
