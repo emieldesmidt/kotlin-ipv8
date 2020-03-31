@@ -10,6 +10,7 @@ import nl.tudelft.ipv8.android.keyvault.AndroidCryptoProvider
 import nl.tudelft.ipv8.attestation.trustchain.EMPTY_PK
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainBlock
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
+import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -87,6 +88,7 @@ class VotingCommunity : Community() {
 
         // Crawl the chain of the proposer.
         for (it in trustchain.getChainByUser(proposerKey)) {
+            val block_public_key = defaultCryptoProvider.keyFromPublicBin(it.publicKey).toString()
 
             if (votes.contains(it.publicKey.contentToString())){
                 continue
@@ -98,13 +100,6 @@ class VotingCommunity : Community() {
                 continue
             }
 
-            if (!voters.contains(it.publicKey.toString())){
-                Log.e("vote_debug", voters.toString())
-//                Log.e("vote_debug", trustchain.getPeerByPublicKeyBin(it.publicKey)?.publicKey.toString())
-//                Log.e("vote_debug", it.publicKey.joinToString("") { "%02x".format(it) })
-                Log.e("vote_debug", AndroidCryptoProvider.keyFromPublicBin(it.linkPublicKey).toString())
-                continue
-            }
 
             // Parse the 'message' field as JSON.
             val voteJSON = try {
@@ -133,6 +128,14 @@ class VotingCommunity : Community() {
             // A block with the same subject but no reply is the original vote proposal.
             if (!voteJSON.has("VOTE_REPLY")) {
                 // Block is the initial vote proposal because it does not have a VOTE_REPLY field.
+                continue
+            }
+
+            if (!voters.contains(block_public_key)){
+                Log.e("vote_debug", voters.toString())
+//                Log.e("vote_debug", trustchain.getPeerByPublicKeyBin(it.publicKey)?.publicKey.toString())
+//                Log.e("vote_debug", it.publicKey.joinToString("") { "%02x".format(it) })
+                Log.e("vote_debug", defaultCryptoProvider.keyFromPublicBin(it.publicKey).toString())
                 continue
             }
 
