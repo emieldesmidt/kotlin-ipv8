@@ -79,6 +79,7 @@ class VotingCommunity : Community() {
      */
     fun countVotes(voters: List<String>, voteName: String, proposerKey: ByteArray): Pair<Int, Int> {
 
+        // ArrayList for keeping track of already counted votes
         val votes: MutableList<String> = ArrayList()
 
         var yesCount = 0
