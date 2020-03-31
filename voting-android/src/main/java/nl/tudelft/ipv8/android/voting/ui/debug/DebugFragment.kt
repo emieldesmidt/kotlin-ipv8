@@ -53,11 +53,15 @@ class DebugFragment : BaseFragment() {
 
         builder.setPositiveButton("Create") { _, _ ->
             val proposal = input.text.toString()
+
+            // Create list of your peers and include yourself
             val peers: MutableList<String> = ArrayList()
             peers.addAll(getVotingCommunity().getPeers().map { it.publicKey.toString() })
             peers.add(getVotingCommunity().myPeer.publicKey.toString())
+
+            // Start voting procedure
             getVotingCommunity().startVote(peers, proposal)
-            Toast.makeText(this.context, "Start voting procedure", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this.context, "Voting procedure started", Toast.LENGTH_SHORT).show()
         }
 
         builder.setNegativeButton("Cancel") { dialog, _ ->

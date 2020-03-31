@@ -14,6 +14,7 @@ import java.util.*
 
 class TrustChainVoter() {
 
+    // Initialize TrustChainHelper so we can make use of the TrustChain
     protected val trustchain: TrustChainHelper by lazy {
         TrustChainHelper(getTrustChainCommunity())
     }
@@ -27,7 +28,9 @@ class TrustChainVoter() {
         return IPv8Android.getInstance()
     }
 
-
+    /**
+     * Starts a vote with given voters list and voting subject.
+     */
     fun startVote(voters : List<String>, voteSubject: String) {
         // TODO: Add vote ID to increase probability of uniqueness.
 
@@ -44,6 +47,10 @@ class TrustChainVoter() {
         trustchain.createVoteProposalBlock(EMPTY_PK, transaction, "voting_block")
     }
 
+    /**
+     * Respond to a vote by checking whether the proposalblock is a voting block
+     * and if it is, signing it with the reply.
+     */
     fun respondToVote(voteName: String, vote: Boolean, proposalBlock: TrustChainBlock) {
         // Reply to the vote with YES or NO.
         val voteReply = if (vote) "YES" else "NO"
@@ -137,6 +144,9 @@ class TrustChainVoter() {
         return Pair(yesCount, noCount)
     }
 
+    /**
+     * Log invalid vote
+     */
     private fun handleInvalidVote(errorType: String) {
         Log.e("vote_debug", errorType)
     }

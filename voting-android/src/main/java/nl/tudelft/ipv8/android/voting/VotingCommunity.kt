@@ -14,36 +14,45 @@ class VotingCommunity : Community() {
 
     val discoveredAddressesContacted: MutableMap<Address, Date> = mutableMapOf()
 
-//    protected val trustchain: TrustChainHelper by lazy {
-//        TrustChainHelper(getTrustChainCommunity())
-//    }
+    // Voting API
+    val trustchainvoter: TrustChainVoter = TrustChainVoter()
+
+    /**
+     * Initialize TrustChainHelper so we can make use of the TrustChain
+      */
+
+    protected val trustchain: TrustChainHelper by lazy {
+        TrustChainHelper(getTrustChainCommunity())
+    }
 
     override fun walkTo(address: Address) {
         super.walkTo(address)
         discoveredAddressesContacted[address] = Date()
     }
 
-//    protected fun getTrustChainCommunity(): TrustChainCommunity {
-//        return getIpv8().getOverlay()
-//            ?: throw IllegalStateException("TrustChainCommunity is not configured")
-//    }
+    protected fun getTrustChainCommunity(): TrustChainCommunity {
+        return getIpv8().getOverlay()
+            ?: throw IllegalStateException("TrustChainCommunity is not configured")
+    }
 
-//    protected fun getVotingCommunity(): VotingCommunity {
-//        return getIpv8().getOverlay()
-//            ?: throw IllegalStateException("VotingCommunity is not configured")
-//    }
+    protected fun getIpv8(): IPv8 {
+        return IPv8Android.getInstance()
+    }
 
-//    protected fun getIpv8(): IPv8 {
-//        return IPv8Android.getInstance()
-//    }
+    /**
+     * Use startVote function from API
+     */
+    fun startVote(voters : List<String>, voteSubject: String) = trustchainvoter.startVote(voters, voteSubject)
 
-    val tvoter: TrustChainVoter = TrustChainVoter()
+    /**
+     * Use respondToVote function from API
+     */
+    fun respondToVote(voteName: String, vote: Boolean, proposalBlock: TrustChainBlock) =  trustchainvoter.respondToVote(voteName, vote, proposalBlock)
 
-    fun startVote(voters : List<String>, voteSubject: String) = tvoter.startVote(voters, voteSubject)
-
-    fun respondToVote(voteName: String, vote: Boolean, proposalBlock: TrustChainBlock) =  tvoter.respondToVote(voteName, vote, proposalBlock)
-
-    fun countVotes(voters: List<String>, voteName: String, proposerKey: ByteArray): Pair<Int, Int> = tvoter.countVotes(voters, voteName, proposerKey)
+    /**
+     * Use countVotes function from API
+     */
+    fun countVotes(voters: List<String>, voteName: String, proposerKey: ByteArray): Pair<Int, Int> = trustchainvoter.countVotes(voters, voteName, proposerKey)
 
     class Factory : Overlay.Factory<VotingCommunity>(VotingCommunity::class.java)
 

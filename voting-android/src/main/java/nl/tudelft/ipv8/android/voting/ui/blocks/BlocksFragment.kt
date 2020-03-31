@@ -61,9 +61,12 @@ open class BlocksFragment : BaseFragment() {
                     try {
                         val voteJSON = JSONObject(it.block.transaction["message"].toString())
                         val voteName = voteJSON.get("VOTE_SUBJECT").toString()
+
+                        // Create list of your peers and include yourself
                         val peers: MutableList<String> = ArrayList()
                         peers.addAll(getVotingCommunity().getPeers().map { it.publicKey.toString() })
                         peers.add(getVotingCommunity().myPeer.publicKey.toString())
+
                         val tally = getVotingCommunity().countVotes(peers,voteName, it.block.publicKey)
 
                         val text = "Yes votes: ${tally.first}. No votes: ${tally.second}."
