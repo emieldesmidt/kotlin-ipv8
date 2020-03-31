@@ -6,6 +6,7 @@ import nl.tudelft.ipv8.Community
 import nl.tudelft.ipv8.IPv8
 import nl.tudelft.ipv8.Overlay
 import nl.tudelft.ipv8.android.IPv8Android
+import nl.tudelft.ipv8.android.keyvault.AndroidCryptoProvider
 import nl.tudelft.ipv8.attestation.trustchain.EMPTY_PK
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainBlock
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
@@ -91,15 +92,17 @@ class VotingCommunity : Community() {
                 continue
             }
 
-            if (!voters.contains(it.publicKey.toString())){
-                continue
-            }
-
-
-
             // Skip all blocks which are not voting blocks
             // and don't have a 'message' field in their transaction.
             if (it.type != "voting_block" || !it.transaction.containsKey("message")) {
+                continue
+            }
+
+            if (!voters.contains(it.publicKey.toString())){
+                Log.e("vote_debug", voters.toString())
+//                Log.e("vote_debug", trustchain.getPeerByPublicKeyBin(it.publicKey)?.publicKey.toString())
+//                Log.e("vote_debug", it.publicKey.joinToString("") { "%02x".format(it) })
+                Log.e("vote_debug", AndroidCryptoProvider.keyFromPublicBin(it.linkPublicKey).toString())
                 continue
             }
 
