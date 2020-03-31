@@ -8,6 +8,7 @@ import nl.tudelft.ipv8.android.IPv8Android
 import nl.tudelft.ipv8.attestation.trustchain.EMPTY_PK
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainBlock
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
+import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -28,7 +29,10 @@ class TrustchainVoter() {
         return IPv8Android.getInstance()
     }
 
-    fun startVote(voteList: List<String>, voteSubject: String) {
+    fun startVote(voters : List<String>, voteSubject: String) {
+        // TODO: Add vote ID to increase probability of uniqueness.
+
+        val voteList = JSONArray(voters)
 
         // Create a JSON object containing the vote subject
         val voteJSON = JSONObject()
@@ -38,16 +42,7 @@ class TrustchainVoter() {
         // Put the JSON string in the transaction's 'message' field.
         val transaction = mapOf("message" to voteJSON.toString())
 
-        trustchain.createVoteProposalBlock(
-            EMPTY_PK,
-            transaction,
-            "voting_block"
-        )
-
-        // Update the JSON to include a VOTE_END message.
-        voteJSON.put("VOTE_END", "True")
-        val endTransaction = mapOf("message" to voteJSON.toString())
-
+        trustchain.createVoteProposalBlock(EMPTY_PK, transaction, "voting_block")
     }
 
     fun respondToVote(voteName: String, vote: Boolean, proposalBlock: TrustChainBlock) {
@@ -68,17 +63,20 @@ class TrustchainVoter() {
     /**
      * Return the tally on a vote proposal in a pair(yes, no).
      */
-    fun countVotes(voteName: String, proposerKey: ByteArray): Pair<Int, Int> {
+    fun countVotes(voters: List<String>, voteName: String, proposerKey: ByteArray): Pair<Int, Int> {
 
-        var voters: MutableList<String> = ArrayList()
+        // ArrayList for keeping track of already counted votes
+        val votes: MutableList<String> = ArrayList()
 
         var yesCount = 0
         var noCount = 0
 
         // Crawl the chain of the proposer.
         for (it in trustchain.getChainByUser(proposerKey)) {
+            val blockPublicKey = defaultCryptoProvider.keyFromPublicBin(it.publicKey).toString()
 
-            if (voters.contains(it.publicKey.contentToString())){
+            // Check whether vote has already been counted
+            if (votes.contains(it.publicKey.contentToString())){
                 continue
             }
 
@@ -118,15 +116,20 @@ class TrustchainVoter() {
                 continue
             }
 
+            // Check whether the voter is in voting list
+            if (!voters.contains(blockPublicKey)){
+                continue
+            }
+
             // Add the votes, or assume a malicious vote if it is not YES or NO.
             when (voteJSON.get("VOTE_REPLY")) {
                 "YES" -> {
                     yesCount++
-                    voters.add(it.publicKey.contentToString())
+                    votes.add(it.publicKey.contentToString())
                 }
                 "NO" -> {
                     noCount++
-                    voters.add(it.publicKey.contentToString())
+                    votes.add(it.publicKey.contentToString())
                 }
                 else -> handleInvalidVote("Vote was not 'YES' or 'NO' but: '${voteJSON.get("VOTE_REPLY")}'.")
             }
