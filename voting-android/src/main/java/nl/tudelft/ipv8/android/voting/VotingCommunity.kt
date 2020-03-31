@@ -6,7 +6,6 @@ import nl.tudelft.ipv8.Community
 import nl.tudelft.ipv8.IPv8
 import nl.tudelft.ipv8.Overlay
 import nl.tudelft.ipv8.android.IPv8Android
-import nl.tudelft.ipv8.android.keyvault.AndroidCryptoProvider
 import nl.tudelft.ipv8.attestation.trustchain.EMPTY_PK
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainBlock
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
@@ -49,7 +48,6 @@ class VotingCommunity : Community() {
 
         val voteList = JSONArray(voters)
 
-
         // Create a JSON object containing the vote subject
         val voteJSON = JSONObject()
             .put("VOTE_SUBJECT", voteSubject)
@@ -81,15 +79,16 @@ class VotingCommunity : Community() {
      */
     fun countVotes(voters: List<String>, voteName: String, proposerKey: ByteArray): Pair<Int, Int> {
 
-        var votes: MutableList<String> = ArrayList()
+        val votes: MutableList<String> = ArrayList()
 
         var yesCount = 0
         var noCount = 0
 
         // Crawl the chain of the proposer.
         for (it in trustchain.getChainByUser(proposerKey)) {
-            val block_public_key = defaultCryptoProvider.keyFromPublicBin(it.publicKey).toString()
+            val blockPublicKey = defaultCryptoProvider.keyFromPublicBin(it.publicKey).toString()
 
+            // Check whether vote has already been counted
             if (votes.contains(it.publicKey.contentToString())){
                 continue
             }
@@ -99,7 +98,6 @@ class VotingCommunity : Community() {
             if (it.type != "voting_block" || !it.transaction.containsKey("message")) {
                 continue
             }
-
 
             // Parse the 'message' field as JSON.
             val voteJSON = try {
@@ -131,11 +129,8 @@ class VotingCommunity : Community() {
                 continue
             }
 
-            if (!voters.contains(block_public_key)){
-                Log.e("vote_debug", voters.toString())
-//                Log.e("vote_debug", trustchain.getPeerByPublicKeyBin(it.publicKey)?.publicKey.toString())
-//                Log.e("vote_debug", it.publicKey.joinToString("") { "%02x".format(it) })
-                Log.e("vote_debug", defaultCryptoProvider.keyFromPublicBin(it.publicKey).toString())
+            // Check whether the voter is in voting list
+            if (!voters.contains(blockPublicKey)){
                 continue
             }
 
