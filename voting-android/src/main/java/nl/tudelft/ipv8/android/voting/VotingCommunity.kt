@@ -14,30 +14,30 @@ class VotingCommunity : Community() {
 
     val discoveredAddressesContacted: MutableMap<Address, Date> = mutableMapOf()
 
-    protected val trustchain: TrustChainHelper by lazy {
-        TrustChainHelper(getTrustChainCommunity())
-    }
+//    protected val trustchain: TrustChainHelper by lazy {
+//        TrustChainHelper(getTrustChainCommunity())
+//    }
 
     override fun walkTo(address: Address) {
         super.walkTo(address)
         discoveredAddressesContacted[address] = Date()
     }
 
-    protected fun getTrustChainCommunity(): TrustChainCommunity {
-        return getIpv8().getOverlay()
-            ?: throw IllegalStateException("TrustChainCommunity is not configured")
-    }
+//    protected fun getTrustChainCommunity(): TrustChainCommunity {
+//        return getIpv8().getOverlay()
+//            ?: throw IllegalStateException("TrustChainCommunity is not configured")
+//    }
 
-    protected fun getVotingCommunity(): VotingCommunity {
-        return getIpv8().getOverlay()
-            ?: throw IllegalStateException("VotingCommunity is not configured")
-    }
+//    protected fun getVotingCommunity(): VotingCommunity {
+//        return getIpv8().getOverlay()
+//            ?: throw IllegalStateException("VotingCommunity is not configured")
+//    }
 
-    protected fun getIpv8(): IPv8 {
-        return IPv8Android.getInstance()
-    }
+//    protected fun getIpv8(): IPv8 {
+//        return IPv8Android.getInstance()
+//    }
 
-    val tvoter: TrustChainVoter = TrustChainVoter(trustchain)
+    val tvoter: TrustChainVoter = TrustChainVoter()
 
     fun startVote(voters : List<String>, voteSubject: String) = tvoter.startVote(voters, voteSubject)
 

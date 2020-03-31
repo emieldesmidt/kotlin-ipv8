@@ -1,15 +1,31 @@
 package nl.tudelft.ipv8.android.voting
 
 import android.util.Log
+import nl.tudelft.ipv8.IPv8
+import nl.tudelft.ipv8.android.IPv8Android
 import nl.tudelft.ipv8.attestation.trustchain.EMPTY_PK
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainBlock
+import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
 import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 
-class TrustChainVoter(protected val trustchain: TrustChainHelper) {
+class TrustChainVoter() {
+
+    protected val trustchain: TrustChainHelper by lazy {
+        TrustChainHelper(getTrustChainCommunity())
+    }
+
+    protected fun getTrustChainCommunity(): TrustChainCommunity {
+        return getIpv8().getOverlay()
+            ?: throw IllegalStateException("TrustChainCommunity is not configured")
+    }
+
+    protected fun getIpv8(): IPv8 {
+        return IPv8Android.getInstance()
+    }
 
 
     fun startVote(voters : List<String>, voteSubject: String) {
