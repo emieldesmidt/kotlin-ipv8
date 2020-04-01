@@ -61,7 +61,7 @@ open class BlocksFragment : BaseFragment() {
                     try {
                         val voteJSON = JSONObject(it.block.transaction["message"].toString())
                         val voteName = voteJSON.get("VOTE_SUBJECT").toString()
-                        val tally = getVotingCommunity().countVotes(voteName, it.block.publicKey)
+                        val tally = getVotingCommunity().countVotes(getVotingCommunity().getPeers().map { it.publicKey.toString() },voteName, it.block.publicKey)
 
                         val text = "Yes votes: ${tally.first}. No votes: ${tally.second}."
 
