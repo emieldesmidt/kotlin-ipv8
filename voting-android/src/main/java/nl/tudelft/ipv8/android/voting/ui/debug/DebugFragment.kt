@@ -28,7 +28,7 @@ class DebugFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         proposeButton.setOnClickListener {
-            showNewVoteDialog();
+            showNewVoteDialog()
         }
 
         lifecycleScope.launchWhenStarted {
@@ -53,8 +53,15 @@ class DebugFragment : BaseFragment() {
 
         builder.setPositiveButton("Create") { _, _ ->
             val proposal = input.text.toString()
-            getVotingCommunity().startVote(getVotingCommunity().getPeers().map { it.publicKey.toString() }, proposal)
-            Toast.makeText(this.context, "Start voting procedure", Toast.LENGTH_SHORT).show()
+
+            // Create list of your peers and include yourself
+            val peers: MutableList<String> = ArrayList()
+            peers.addAll(getVotingCommunity().getPeers().map { it.publicKey.toString() })
+            peers.add(getVotingCommunity().myPeer.publicKey.toString())
+
+            // Start voting procedure
+            getVotingCommunity().startVote(peers, proposal)
+            Toast.makeText(this.context, "Voting procedure started", Toast.LENGTH_SHORT).show()
         }
 
         builder.setNegativeButton("Cancel") { dialog, _ ->
